@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "python-template"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+aiohttp = ">=3.10.10"
+aiosqlite = ">=0.20.0"
+beautifulsoup4 = ">=4.12.3"
+markdown = ">=3.7"
+playwright = ">=1.48.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
