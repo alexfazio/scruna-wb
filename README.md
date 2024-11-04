@@ -1,7 +1,7 @@
 # Web Archive Scraper
 
 ## Overview
-This project is a specialized web scraper designed to archive content from a specific domain (`forum.keyboardmaestro.com`) using the Internet Archive's Wayback Machine. It systematically retrieves historical versions of web pages and stores them in multiple formats for preservation and analysis.
+This project is a specialized web scraper designed to archive content from a specific domain (`<TARGET_DOMAIN>`) using the Internet Archive's Wayback Machine. It systematically retrieves historical versions of web pages and stores them in multiple formats for preservation and analysis.
 
 ## Features
 - Retrieves historical snapshots from the Wayback Machine
@@ -120,12 +120,12 @@ flowchart TD
 ```
 
 ### 1. URL Collection
-- Queries the Wayback Machine's CDX API to get all archived URLs for the domain
-- Filters for successful responses (HTTP 200)
-- Keeps only the most recent version of each URL
+- Queries the Wayback Machine's CDX API to get all archived URLs for the domain (`fetch_archived_urls`)
+- Filters for successful responses (HTTP 200) (`fetch_archived_urls`)
+- Keeps only the most recent version of each URL (`fetch_archived_urls`)
 
 ### 2. Database Management
-- Uses SQLite to track scraping progress
+- Uses SQLite to track scraping progress (`init_db`)
 - Schema:
   - `url`: The target URL (PRIMARY KEY)
   - `timestamp`: Wayback Machine timestamp
@@ -135,30 +135,30 @@ flowchart TD
 The scraper follows this workflow:
 
 1. **Initialization**
-   - Fetches archived URLs
-   - Sets up database
-   - Marks all URLs as 'pending'
+   - Fetches archived URLs (`main`)
+   - Sets up database (`main`)
+   - Marks all URLs as 'pending' (`main`)
 
 2. **Browser Setup**
-   - Launches headless Chromium browser
-   - Creates new context and page
+   - Launches headless Chromium browser (`main`)
+   - Creates new context and page (`main`)
 
 3. **For Each URL**
-   - Generates dynamic browser-like headers
-   - Navigates to Wayback Machine URL
-   - Implements random delays (10-120 seconds)
-   - Updates status in database
+   - Generates dynamic browser-like headers (`generate_dynamic_headers`)
+   - Navigates to Wayback Machine URL (`scrape_page`)
+   - Implements random delays (10-120 seconds) (`scrape_page`)
+   - Updates status in database (`scrape_page`)
 
 4. **Content Saving**
    For each successfully scraped page:
-   - Saves raw HTML
-   - Extracts and saves metadata (title, description) as JSON
-   - Converts content to Markdown
+   - Saves raw HTML (`save_content`)
+   - Extracts and saves metadata (title, description) as JSON (`save_content`)
+   - Converts content to Markdown (`save_content`)
 
 ### 4. Error Handling
-- Implements timeouts for page loads
-- Marks failed URLs with 'error' status
-- Continues processing remaining URLs after errors
+- Implements timeouts for page loads (`scrape_page`)
+- Marks failed URLs with 'error' status (`scrape_page`)
+- Continues processing remaining URLs after errors (`scrape_page`)
 
 ## Output Formats
 
@@ -187,7 +187,7 @@ The project includes a data exploration script (`data_exp.py`) that allows you t
 ## Configuration
 Key settings in `main.py`:
 ```python
-DOMAIN = 'forum.keyboardmaestro.com'
+DOMAIN = '<TARGET_DOMAIN>'
 OUTPUT_DIR = 'scraped_data'
 ```
 
