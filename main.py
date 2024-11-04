@@ -1,18 +1,13 @@
-import asyncio
-import aiohttp
+import asyncio, aiohttp, aiosqlite, os, json, random, datetime, markdown
 from playwright.async_api import async_playwright
-import aiosqlite
-import os
-import json
-import random
 from datetime import datetime
 from bs4 import BeautifulSoup
-import markdown
 
 # Setup
 DOMAIN = 'forum.keyboardmaestro.com'
 CDX_API = f'http://web.archive.org/cdx/search/cdx?url={DOMAIN}/*&output=json&collapse=urlkey&filter=statuscode:200'
 OUTPUT_DIR = 'scraped_data'
+
 
 def generate_dynamic_headers(url: str, timestamp: str) -> dict:
     """
@@ -28,12 +23,24 @@ def generate_dynamic_headers(url: str, timestamp: str) -> dict:
     chrome_version = "130.0.0.0"
     return {
         "sec-ch-ua-platform": '"Windows"',
-        "Referer": f"https://web.archive.org/web/{timestamp}/https://{url}",
-        "User-Agent": f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{chrome_version} Safari/537.36",
-        "sec-ch-ua": f'"Chromium";v="{chrome_version.split(".")[0]}", "Google Chrome";v="{chrome_version.split(".")[0]}", "Not?A_Brand";v="99"',
+        "Referer": (
+            f"https://web.archive.org/web/{timestamp}/"
+            f"https://{url}"
+        ),
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            f"AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{chrome_version} "
+            "Safari/537.36"
+        ),
+        "sec-ch-ua": (
+            f'"Chromium";v="{chrome_version.split(".")[0]}", '
+            f'"Google Chrome";v="{chrome_version.split(".")[0]}", '
+            '"Not?A_Brand";v="99"'
+        ),
         "DNT": "1",
         "sec-ch-ua-mobile": "?0"
     }
+
 
 async def fetch_archived_urls() -> dict:
     """
@@ -63,6 +70,7 @@ async def fetch_archived_urls() -> dict:
             print(f"Total unique URLs after collapsing: {len(url_dict)}")
             return url_dict
 
+
 async def init_db() -> aiosqlite.Connection:
     """
     Initialize SQLite database connection and create required tables.
@@ -86,6 +94,7 @@ async def init_db() -> aiosqlite.Connection:
     ''')
     await db.commit()
     return db
+
 
 async def save_content(url: str, content: str) -> None:
     """
@@ -116,7 +125,8 @@ async def save_content(url: str, content: str) -> None:
     data = {
         'url': url,
         'title': soup.title.string.strip() if soup.title and soup.title.string else '',
-        'description': soup.find('meta', attrs={'name': 'description'})['content'].strip() if soup.find('meta', attrs={'name': 'description'}) else ''
+        'description': soup.find('meta', attrs={'name': 'description'})['content'].strip() if soup.find('meta', attrs={
+            'name': 'description'}) else ''
     }
     json_path = os.path.join(OUTPUT_DIR, f'{filename}.json')
     with open(json_path, 'w', encoding='utf-8') as f:
@@ -128,6 +138,7 @@ async def save_content(url: str, content: str) -> None:
     with open(md_path, 'w', encoding='utf-8') as f:
         f.write(md_content)
     print(f"Saved Markdown content to {md_path}")
+
 
 async def scrape_page(page, db: aiosqlite.Connection, url: str, timestamp: str) -> None:
     """
@@ -170,6 +181,7 @@ async def scrape_page(page, db: aiosqlite.Connection, url: str, timestamp: str) 
     print(f"Waiting for {delay:.2f} seconds before next request...")
     await asyncio.sleep(delay)
 
+
 async def main() -> None:
     """
     Main execution function for the web scraper.
@@ -200,7 +212,7 @@ async def main() -> None:
 
     print("Fetching pending URLs from the database...")
     async with db.execute(
-        'SELECT url, timestamp FROM pages WHERE status = ?', ('pending',)
+            'SELECT url, timestamp FROM pages WHERE status = ?', ('pending',)
     ) as cursor:
         pending_rows = await cursor.fetchall()
         pending_urls = [(row[0], row[1]) for row in pending_rows]
@@ -223,6 +235,7 @@ async def main() -> None:
         await browser.close()
     await db.close()
     print("Scraping completed.")
+
 
 if __name__ == '__main__':
     asyncio.run(main())
