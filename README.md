@@ -1,5 +1,55 @@
-# Scraper Flowchart
+# Web Archive Scraper
 
+## Overview
+This project is a specialized web scraper designed to archive content from a specific domain (`forum.keyboardmaestro.com`) using the Internet Archive's Wayback Machine. It systematically retrieves historical versions of web pages and stores them in multiple formats for preservation and analysis.
+
+## Features
+- Retrieves historical snapshots from the Wayback Machine
+- Saves content in three formats: HTML, JSON metadata, and Markdown
+- Uses a SQLite database to track scraping progress
+- Implements polite scraping with random delays
+- Handles errors gracefully
+- Provides browser-like request headers to avoid blocking
+
+## Prerequisites
+- Python 3.11 or higher
+- Poetry (for dependency management)
+
+## Installation
+
+1. Clone the repository
+```bash
+git clone <repository-url>
+cd <project-directory>
+```
+
+2. Install dependencies using Poetry
+```bash
+poetry install
+```
+
+3. Install Playwright browsers
+```bash
+poetry run playwright install chromium
+```
+
+## Project Structure
+
+```
+.
+├── main.py           # Main scraper implementation
+├── data_exp.py       # Data exploration utilities
+├── scraper.db        # SQLite database (auto-generated)
+├── scraped_data/     # Output directory for scraped content
+│   ├── *.html        # Raw HTML files
+│   ├── *.json        # Metadata files
+│   └── *.md          # Markdown versions
+└── pyproject.toml    # Project dependencies and configuration
+```
+
+## How It Works
+
+### Process Flow
 ```mermaid
 flowchart TD
     A["Start: main()"] --> B["fetch_archived_urls():
@@ -68,3 +118,120 @@ flowchart TD
         Save Markdown"]
     end
 ```
+
+### 1. URL Collection
+- Queries the Wayback Machine's CDX API to get all archived URLs for the domain
+- Filters for successful responses (HTTP 200)
+- Keeps only the most recent version of each URL
+
+### 2. Database Management
+- Uses SQLite to track scraping progress
+- Schema:
+  - `url`: The target URL (PRIMARY KEY)
+  - `timestamp`: Wayback Machine timestamp
+  - `status`: Current status (pending/scraped/error)
+
+### 3. Scraping Process
+The scraper follows this workflow:
+
+1. **Initialization**
+   - Fetches archived URLs
+   - Sets up database
+   - Marks all URLs as 'pending'
+
+2. **Browser Setup**
+   - Launches headless Chromium browser
+   - Creates new context and page
+
+3. **For Each URL**
+   - Generates dynamic browser-like headers
+   - Navigates to Wayback Machine URL
+   - Implements random delays (10-120 seconds)
+   - Updates status in database
+
+4. **Content Saving**
+   For each successfully scraped page:
+   - Saves raw HTML
+   - Extracts and saves metadata (title, description) as JSON
+   - Converts content to Markdown
+
+### 4. Error Handling
+- Implements timeouts for page loads
+- Marks failed URLs with 'error' status
+- Continues processing remaining URLs after errors
+
+## Output Formats
+
+1. **HTML Files**
+   - Raw HTML content exactly as archived
+   - Filename: `{url_safe_name}.html`
+
+2. **JSON Metadata**
+   - URL
+   - Page title
+   - Meta description
+   - Filename: `{url_safe_name}.json`
+
+3. **Markdown**
+   - Converted HTML content
+   - Preserves basic formatting
+   - Filename: `{url_safe_name}.md`
+
+## Data Exploration
+The project includes a data exploration script (`data_exp.py`) that allows you to:
+- View database tables
+- Check scraping status
+- Open scraped HTML files in browser
+- Review successful and failed scrapes
+
+## Configuration
+Key settings in `main.py`:
+```python
+DOMAIN = 'forum.keyboardmaestro.com'
+OUTPUT_DIR = 'scraped_data'
+```
+
+## Rate Limiting
+To respect server resources and avoid blocking:
+- Random delays between requests (10-120 seconds)
+- Browser-like headers
+- Single-threaded processing
+- Proper user agent strings
+
+## Error States
+The scraper handles several error conditions:
+- Network timeouts
+- Invalid HTML content
+- Missing pages
+- Server errors
+
+## Notes
+- All scraped data is stored in the `scraped_data` directory
+- The SQLite database (`scraper.db`) maintains state between runs
+- The scraper can be safely stopped and resumed
+- Progress is logged to stdout
+
+## Limitations
+- Single-domain focused
+- Sequential processing only
+- Requires stable internet connection
+- May be affected by Wayback Machine availability
+
+## Contributing
+1. Fork the repository
+2. Create a feature branch
+3. Commit changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the [MIT](https://opensource.org/licenses/MIT) License - see the [LICENSE](LICENSE) file for details.
+
+## Disclaimer
+
+*It is the sole responsibility of the end users to respect websites' policies when scraping, searching, and crawling with Web Archive Scraper. Users are advised to adhere to the applicable privacy policies and terms of use of the websites prior to initiating any scraping activities. By default, Web Archive Scraper respects the directives specified in the websites' robots.txt files when crawling. By utilizing Web Archive Scraper, you expressly agree to comply with these conditions.*
+
+[↑ Back to Top ↑](#Web-Archive-Scraper)
+
+Copyright (c) 2024-present, Alex Fazio
