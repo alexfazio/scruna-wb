@@ -1,7 +1,24 @@
 # Web Archive Scraper
 
 ## Overview
-This project is a specialized web scraper designed to archive content from a specific domain (`<TARGET_DOMAIN>`) using the Internet Archive's Wayback Machine. It systematically retrieves historical versions of web pages and stores them in multiple formats for preservation and analysis.
+This project is a specialized web scraper designed to preserve and archive historical forum content using the Internet Archive's Wayback Machine. Instead of scraping a live website directly, it leverages the Wayback Machine's extensive archive to:
+1. Access historical versions of web pages that might no longer be available
+2. Retrieve content from a specific domain (`<TARGET_DOMAIN>`) across different points in time
+3. Ensure data consistency and integrity through verified snapshots
+
+The Wayback Machine serves as a reliable intermediary, providing:
+- Timestamped snapshots of web pages
+- A structured API for discovering archived content
+- Verified copies of pages as they appeared at specific points in time
+- Legal and ethical access to historical web content
+
+The scraper systematically:
+1. Queries the Wayback Machine's CDX API to discover archived pages
+2. Retrieves the most recent snapshot of each unique URL
+3. Processes and stores the content in multiple formats (HTML, JSON metadata, and Markdown)
+4. Tracks progress using a local SQLite database
+
+This approach ensures reliable archival of web content while respecting rate limits and maintaining data integrity.
 
 ## Features
 - Retrieves historical snapshots from the Wayback Machine
