@@ -1,4 +1,18 @@
-# Web Archive Scraper
+<p align="center">
+  <img src="/Users/alex/PycharmProjects/tuna-wayback-scrape/images/scruna-wb-readme-cover.png" alt="Alt text for the image">
+</p>
+
+<p align="center">
+	<h1 align="center"><b>scruna-wb</b></h1>
+<p align="center">
+    Tuna's Wayback Scraper
+    <br />
+    <br />
+    <a href="https://x.com/tunahorse21">@tunahorse21</a>
+    ·
+    <a href="https://x.com/alxfazio">@alxfazio</a>
+  </p>
+</p>
 
 ## Overview
 This project is a specialized web scraper designed to preserve and archive historical forum content using the Internet Archive's Wayback Machine. Instead of scraping a live website directly, it leverages the Wayback Machine's extensive archive to:
