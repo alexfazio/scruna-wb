@@ -14,6 +14,8 @@
   </p>
 </p>
 
+> This project contains derivative content based on code found in [Tuna's](https://x.com/tunahorse21) article ["Web scraping in 2024: pt2 actually scraping"](https://tuna.cat/posts/web-scraping-2024-pt2/).
+
 ## Overview
 This project is a specialized web scraper designed to preserve and archive historical forum content using the Internet Archive's Wayback Machine. Instead of scraping a live website directly, it leverages the Wayback Machine's extensive archive to:
 1. Access historical versions of web pages that might no longer be available
