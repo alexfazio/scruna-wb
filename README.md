@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/Users/alex/PycharmProjects/tuna-wayback-scrape/images/scruna-wb-readme-cover.png" alt="Alt text for the image">
+  <img src="./images/scruna-wb-readme-cover.png" alt="Alt text for the image">
 </p>
 
 <p align="center">
